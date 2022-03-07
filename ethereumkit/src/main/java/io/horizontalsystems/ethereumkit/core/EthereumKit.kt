@@ -35,17 +35,17 @@ import java.util.*
 import java.util.logging.Logger
 
 class EthereumKit(
-    private val blockchain: IBlockchain,
-    private val transactionManager: TransactionManager,
-    private val transactionSyncManager: TransactionSyncManager,
-    private val internalTransactionSyncer: TransactionInternalTransactionSyncer,
-    private val connectionManager: ConnectionManager,
-    private val address: Address,
+    val blockchain: IBlockchain,
+    val transactionManager: TransactionManager,
+    val transactionSyncManager: TransactionSyncManager,
+    val internalTransactionSyncer: TransactionInternalTransactionSyncer,
+    val connectionManager: ConnectionManager,
+    val address: Address,
     val chain: Chain,
     val walletId: String,
     val transactionProvider: ITransactionProvider,
-    private val decorationManager: DecorationManager,
-    private val state: EthereumKitState = EthereumKitState()
+    val decorationManager: DecorationManager,
+    val state: EthereumKitState = EthereumKitState()
 ) : IBlockchainListener {
 
     private val logger = Logger.getLogger("EthereumKit")
