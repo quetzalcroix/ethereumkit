@@ -507,7 +507,7 @@ class EthereumKit(
             }
         }
 
-        private fun privateKey(seed: ByteArray, chain: Chain): BigInteger {
+        fun privateKey(seed: ByteArray, chain: Chain): BigInteger {
             val hdWallet = HDWallet(seed, chain.coinType)
             return hdWallet.privateKey(0, 0, true).privKey
         }
