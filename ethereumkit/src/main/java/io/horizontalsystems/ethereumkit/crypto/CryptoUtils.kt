@@ -13,13 +13,13 @@ import org.bouncycastle.crypto.modes.SICBlockCipher
 import org.bouncycastle.crypto.params.*
 import org.bouncycastle.crypto.signers.ECDSASigner
 import org.bouncycastle.crypto.signers.HMacDSAKCalculator
+import org.bouncycastle.jcajce.provider.digest.Keccak
 import org.bouncycastle.jce.spec.ECParameterSpec
 import org.bouncycastle.math.ec.ECAlgorithms
 import org.bouncycastle.math.ec.ECCurve
 import org.bouncycastle.math.ec.ECPoint
 import org.bouncycastle.util.BigIntegers
 import java.math.BigInteger
-import java.security.MessageDigest
 import java.util.*
 
 object CryptoUtils {
@@ -44,7 +44,8 @@ object CryptoUtils {
     fun ecdhAgree(myKey: ECKey, remotePublicKeyPoint: ECPoint): ByteArray {
         val agreement = ECDHBasicAgreement()
         agreement.init(ECPrivateKeyParameters(myKey.privateKey, CURVE))
-        return agreement.calculateAgreement(ECPublicKeyParameters(remotePublicKeyPoint, CURVE)).toBytes(SECRET_SIZE)
+        return agreement.calculateAgreement(ECPublicKeyParameters(remotePublicKeyPoint, CURVE))
+            .toBytes(SECRET_SIZE)
     }
 
     fun ellipticSign(messageToSign: ByteArray, privateKey: BigInteger): ByteArray {
@@ -100,17 +101,22 @@ object CryptoUtils {
 
         val cipher = iesEngine.processBlock(message, 0, message.size, prefixBytes)
 
-        return ECIESEncryptedMessage(prefixBytes,
-                ephemPair.publicKeyPoint.getEncoded(false),
-                iv,
-                cipher.copyOfRange(0, cipher.size - 32),
-                cipher.copyOfRange(cipher.size - 32, cipher.size))
+        return ECIESEncryptedMessage(
+            prefixBytes,
+            ephemPair.publicKeyPoint.getEncoded(false),
+            iv,
+            cipher.copyOfRange(0, cipher.size - 32),
+            cipher.copyOfRange(cipher.size - 32, cipher.size)
+        )
     }
 
     fun sha3(data: ByteArray): ByteArray {
-        val digest = MessageDigest.getInstance(HASH_256_ALGORITHM_NAME)
-        digest.update(data)
-        return digest.digest()
+        // val digest = MessageDigest.getInstance(HASH_256_ALGORITHM_NAME)
+        // digest.update(data)
+        // return digest.digest()
+        val keccakDigest = Keccak.Digest256()
+        keccakDigest.update(data)
+        return keccakDigest.digest()
     }
 
     fun aesEncrypt(key: ByteArray, data: ByteArray): ByteArray {
@@ -125,15 +131,21 @@ object CryptoUtils {
         return ECKey(privKey, CURVE.g.multiply(privKey))
     }
 
-    private fun makeIESEngine(isEncrypt: Boolean, pub: ECPoint, prv: BigInteger, IV: ByteArray): IESEngine {
+    private fun makeIESEngine(
+        isEncrypt: Boolean,
+        pub: ECPoint,
+        prv: BigInteger,
+        IV: ByteArray
+    ): IESEngine {
         val aesFastEngine = AESEngine()
 
         val iesEngine = IESEngine(
-                ECDHBasicAgreement(),
-                ConcatKDFBytesGenerator(SHA256Digest()),
-                HMac(SHA256Digest()),
-                SHA256Digest(),
-                BufferedBlockCipher(SICBlockCipher(aesFastEngine)))
+            ECDHBasicAgreement(),
+            ConcatKDFBytesGenerator(SHA256Digest()),
+            HMac(SHA256Digest()),
+            SHA256Digest(),
+            BufferedBlockCipher(SICBlockCipher(aesFastEngine))
+        )
 
 
         val d = byteArrayOf()
@@ -142,11 +154,21 @@ object CryptoUtils {
         val p = IESWithCipherParameters(d, e, KEY_SIZE, KEY_SIZE)
         val parametersWithIV = ParametersWithIV(p, IV)
 
-        iesEngine.init(isEncrypt, ECPrivateKeyParameters(prv, CURVE), ECPublicKeyParameters(pub, CURVE), parametersWithIV)
+        iesEngine.init(
+            isEncrypt,
+            ECPrivateKeyParameters(prv, CURVE),
+            ECPublicKeyParameters(pub, CURVE),
+            parametersWithIV
+        )
         return iesEngine
     }
 
-    private fun recoverPubBytesFromSignature(recId: Int, r: BigInteger, s: BigInteger, messageHash: ByteArray?): ByteArray? {
+    private fun recoverPubBytesFromSignature(
+        recId: Int,
+        r: BigInteger,
+        s: BigInteger,
+        messageHash: ByteArray?
+    ): ByteArray? {
         val n = CURVE.n
         val i = BigInteger.valueOf(recId.toLong() / 2)
         val x = r.add(i.multiply(n))
