@@ -54,7 +54,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation 'org.bouncycastle:bcpkix-jdk15on:1.65'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.70'
 
     implementation 'com.github.horizontalsystems:hd-wallet-kit-android:7a559bd'
 
