@@ -197,7 +197,7 @@ class TradeManager(
                 )
                 Chain.BinanceSmartChain -> Address("0x10ED43C718714eb63d5aA57B78B54704E256024E")
                 Chain.Polygon -> Address("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff")
-                Chain.DigestNetwork -> Address("0x88A3ad4F92C50a82e8Be91291f07F7eDb751fB2f")
+                Chain.DigestSwarmChain -> Address("0x88A3ad4F92C50a82e8Be91291f07F7eDb751fB2f")
                 else -> throw UnsupportedChainError.NoRouterAddress
             }
 
@@ -206,7 +206,7 @@ class TradeManager(
                 Chain.Ethereum, Chain.EthereumRopsten, Chain.EthereumKovan, Chain.EthereumRinkeby, Chain.EthereumGoerli -> "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
                 Chain.BinanceSmartChain -> "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73"
                 Chain.Polygon -> "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32"
-                Chain.DigestNetwork -> "0xA178CC10E1C428bb66d4d800334f4b97987a77dF"
+                Chain.DigestSwarmChain -> "0xA178CC10E1C428bb66d4d800334f4b97987a77dF"
                 else -> throw UnsupportedChainError.NoFactoryAddress
             }
 
@@ -214,7 +214,7 @@ class TradeManager(
             when (chain) {
                 Chain.Ethereum, Chain.EthereumRopsten, Chain.EthereumKovan, Chain.EthereumRinkeby, Chain.EthereumGoerli, Chain.Polygon -> "0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f"
                 Chain.BinanceSmartChain -> "0x00fb7f630766e6a796048ea87d01acd3068e8ff67d078148a3fa3f4a84f69bd5"
-                Chain.DigestNetwork -> "0x418cd2fa2bd2e2d1ef00a21b08602f00e2f9c8d927c07449dd842ab61a86a8e9"
+                Chain.DigestSwarmChain -> "0x418cd2fa2bd2e2d1ef00a21b08602f00e2f9c8d927c07449dd842ab61a86a8e9"
                 else -> throw UnsupportedChainError.NoInitCodeHash
             }
 

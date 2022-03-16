@@ -9,7 +9,7 @@ sealed class Chain(
     val isMainNet = coinType != 1
 
     object Ethereum: Chain(1, 60, 15, true)
-    object DigestNetwork: Chain(5777, 60, 5, false)
+    object DigestSwarmChain: Chain(5777, 60, 5, false)
     object BinanceSmartChain: Chain(56, 60, 5, false)
     object Polygon: Chain(137, 60, 1, true)
     object EthereumRopsten: Chain(3, 1, 15, true)

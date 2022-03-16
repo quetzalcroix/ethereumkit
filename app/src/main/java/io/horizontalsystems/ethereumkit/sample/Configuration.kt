@@ -6,7 +6,7 @@ import io.horizontalsystems.ethereumkit.sample.modules.main.Erc20Token
 
 object Configuration {
     const val webSocket: Boolean = false
-    val chain: Chain = Chain.DigestNetwork
+    val chain: Chain = Chain.DigestSwarmChain
     const val walletId = "walletId"
     const val defaultsWords = "mom year father track attend frown loyal goddess crisp abandon juice roof"
 
@@ -24,7 +24,7 @@ object Configuration {
                         Erc20Token("DAI", "DAI", Address("0x6b175474e89094c44da98b954eedeac495271d0f"), 18),
                         Erc20Token("USD Coin", "USDC", Address("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"), 6)
                 )
-                Chain.DigestNetwork -> listOf(
+                Chain.DigestSwarmChain -> listOf(
                     Erc20Token("Wrapped DGCoin", "WDGCOIN", Address("0x1b428EeD6eb0bD032903619ba44A1F6d9a5a350C"), 18),
                     Erc20Token("DCCCoin", "DCC", Address("0x7C2861eC9EF8914f8EA9910D58aeE0F8A3b7c725"), 18),
                 )

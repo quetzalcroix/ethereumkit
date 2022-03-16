@@ -239,7 +239,7 @@ class MainViewModel : ViewModel() {
                 else
                     RpcSource.ropstenInfuraHttp(io.horizontalsystems.ethereumkit.sample.Configuration.infuraProjectId, io.horizontalsystems.ethereumkit.sample.Configuration.infuraSecret)
             }
-            Chain.DigestNetwork -> {
+            Chain.DigestSwarmChain -> {
                 transactionSource = TransactionSource.digestExplorer()
                 rpcSource = RpcSource.digestRpcHttp()
             }
