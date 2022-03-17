@@ -12,6 +12,7 @@ import io.horizontalsystems.ethereumkit.api.jsonrpc.models.RpcTransactionReceipt
 import io.horizontalsystems.ethereumkit.api.models.AccountState
 import io.horizontalsystems.ethereumkit.api.models.EthereumKitState
 import io.horizontalsystems.ethereumkit.api.storage.ApiStorage
+import io.horizontalsystems.ethereumkit.core.signer.Signer
 import io.horizontalsystems.ethereumkit.crypto.CryptoUtils
 import io.horizontalsystems.ethereumkit.crypto.InternalBouncyCastleProvider
 import io.horizontalsystems.ethereumkit.decorations.ContractCallDecorator
@@ -75,6 +76,8 @@ class EthereumKit(
             }
     }
 
+    lateinit var accountSigner: Signer
+
     val lastBlockHeight: Long?
         get() = state.lastBlockHeight
 
@@ -106,10 +109,8 @@ class EthereumKit(
         get() = transactionManager.allTransactionsAsync
 
     fun start() {
-        if (started)
-            return
+        if (started) return
         started = true
-
         blockchain.start()
     }
 
@@ -406,7 +407,16 @@ class EthereumKit(
             val seed = Mnemonic().toSeed(words, passphrase)
             val privateKey = privateKey(seed, chain)
             val address = ethereumAddress(privateKey)
-            return getInstance(application, address, chain, rpcSource, transactionSource, walletId)
+            return getInstance(
+                application,
+                address,
+                chain,
+                rpcSource,
+                transactionSource,
+                walletId
+            ).apply {
+                accountSigner = Signer.getInstance(seed, chain)
+            }
         }
 
         private fun getInstance(

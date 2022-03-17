@@ -2,6 +2,7 @@ package io.horizontalsystems.ethereumkit.api.core
 
 import com.google.gson.Gson
 import io.horizontalsystems.ethereumkit.api.jsonrpc.JsonRpc
+import io.horizontalsystems.ethereumkit.network.VextaDNS
 import io.reactivex.Single
 import okhttp3.Credentials
 import okhttp3.Interceptor
@@ -20,10 +21,10 @@ import java.net.URL
 import java.util.logging.Logger
 
 class NodeApiProvider(
-        private val urls: List<URL>,
-        override val blockTime: Long,
-        private val gson: Gson,
-        auth: String? = null
+    private val urls: List<URL>,
+    override val blockTime: Long,
+    private val gson: Gson,
+    auth: String? = null
 ) : IRpcApiProvider {
 
     private val logger = Logger.getLogger(this.javaClass.simpleName)
@@ -31,7 +32,7 @@ class NodeApiProvider(
 
     init {
         val loggingInterceptor = HttpLoggingInterceptor { message -> logger.info(message) }
-                .setLevel(HttpLoggingInterceptor.Level.BASIC)
+            .setLevel(HttpLoggingInterceptor.Level.BASIC)
 
         val headersInterceptor = Interceptor { chain ->
             val requestBuilder = chain.request().newBuilder()
@@ -42,16 +43,17 @@ class NodeApiProvider(
         }
 
         val httpClient = OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-                .addInterceptor(headersInterceptor)
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(headersInterceptor)
+            .dns(VextaDNS())
 
         val retrofit = Retrofit.Builder()
-                .baseUrl("${urls.first()}/")
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .client(httpClient.build())
-                .build()
+            .baseUrl("${urls.first()}/")
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .client(httpClient.build())
+            .build()
 
         service = retrofit.create(InfuraService::class.java)
     }
@@ -59,25 +61,25 @@ class NodeApiProvider(
     override val source: String = urls.first().host
 
     override fun <T> single(rpc: JsonRpc<T>): Single<T> =
-            Single.create { emitter ->
-                var error: Throwable = ApiProviderError.ApiUrlNotFound
+        Single.create { emitter ->
+            var error: Throwable = ApiProviderError.ApiUrlNotFound
 
-                for (url in urls) {
-                    try {
-                        val rpcResponse = service.single(url.toURI(), gson.toJson(rpc)).blockingGet()
-                        val response  = rpc.parseResponse(rpcResponse, gson)
+            for (url in urls) {
+                try {
+                    val rpcResponse = service.single(url.toURI(), gson.toJson(rpc)).blockingGet()
+                    val response = rpc.parseResponse(rpcResponse, gson)
 
-                        emitter.onSuccess(response)
-                        return@create
-                    } catch (throwable: Throwable) {
-                        error = throwable
-                        if (throwable is JsonRpc.ResponseError.RpcError) {
-                           break
-                        }
+                    emitter.onSuccess(response)
+                    return@create
+                } catch (throwable: Throwable) {
+                    error = throwable
+                    if (throwable is JsonRpc.ResponseError.RpcError) {
+                        break
                     }
                 }
-                emitter.onError(error)
             }
+            emitter.onError(error)
+        }
 
     private interface InfuraService {
         @POST

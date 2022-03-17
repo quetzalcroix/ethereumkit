@@ -84,7 +84,6 @@ class TransactionManager(
             decoratedTransaction.receiptWithLogs?.logs?.let { logs ->
                 val neededLogs = logs.filter { it.relevant }
                 if (logs.size > neededLogs.size) {
-                    //delete all transactions, then save only relevant ones
                     storage.remove(logs)
                     storage.save(neededLogs)
                 }

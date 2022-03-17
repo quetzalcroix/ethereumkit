@@ -155,22 +155,21 @@ class RpcBlockchain(
                 DefaultBlockParameter.BlockNumber(toBlock),
                 topics
             )
-        )
-            .flatMap { logs ->
-                if (pullTimestamps) {
-                    pullTransactionTimestamps(logs)
-                } else {
-                    Single.just(logs)
-                }
+        ).flatMap { logs ->
+            if (pullTimestamps) {
+                pullTransactionTimestamps(logs)
+            } else {
+                Single.just(logs)
             }
+        }
     }
 
-    private fun pullTransactionTimestamps(logs: List<TransactionLog>): Single<List<TransactionLog>> {
+    private fun pullTransactionTimestamps(transactionLogs: List<TransactionLog>): Single<List<TransactionLog>> {
         val logsByBlockNumber: MutableMap<Long, MutableList<TransactionLog>> = mutableMapOf()
 
-        for (log in logs) {
-            val logs: MutableList<TransactionLog> = logsByBlockNumber[log.blockNumber]
-                ?: mutableListOf()
+        for (log in transactionLogs) {
+            val logs: MutableList<TransactionLog> =
+                logsByBlockNumber[log.blockNumber] ?: mutableListOf()
             logs.add(log)
             logsByBlockNumber[log.blockNumber] = logs
         }
