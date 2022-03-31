@@ -19,7 +19,7 @@ object Configuration {
 
     val erc20Tokens: List<Erc20Token>
         get() {
-            return when (io.horizontalsystems.ethereumkit.sample.Configuration.chain) {
+            return when (chain) {
                 Chain.Ethereum -> listOf(
                         Erc20Token("DAI", "DAI", Address("0x6b175474e89094c44da98b954eedeac495271d0f"), 18),
                         Erc20Token("USD Coin", "USDC", Address("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"), 6)

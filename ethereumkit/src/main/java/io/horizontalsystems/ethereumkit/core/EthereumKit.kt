@@ -419,7 +419,7 @@ class EthereumKit(
             }
         }
 
-        private fun getInstance(
+        fun getInstance(
             application: Application,
             address: Address,
             chain: Chain,
